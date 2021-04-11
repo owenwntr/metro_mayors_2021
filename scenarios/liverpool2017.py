@@ -1,9 +1,9 @@
 import numpy as np
 
 generalelectionlean = np.array([
-    [ 0.71],
-    [ -0.66],
-    [ -0.18]
+    [ 1.35],
+    [ -1.27],
+    [ -0.53]
 ])
 
 candidates = {'lab':1,'con':1,'libdem':1, 'other':5}

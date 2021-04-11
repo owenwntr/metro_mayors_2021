@@ -1,7 +1,6 @@
 import numpy as np
 
 generalelectionlean = np.array([
-    [ 0],
     [ 0.41],
     [ -0.35],
     [ -0.18]
