@@ -4,6 +4,7 @@ from scipy.linalg import cholesky
 from scipy.stats import norm, describe, t, expon
 from pylab import plot, show, axis, subplot, xlabel, ylabel, grid
 import matplotlib.pyplot as plt
+import pandas as pd
 
 nationalpolling = np.array([
     [ 35.3],
@@ -13,7 +14,7 @@ nationalpolling = np.array([
 
 #incumbenteffect = 0
 
-def model(scenario_name,nationalpolling, incumbenteffect):
+def election_model(scenario_name,nationalpolling, incumbenteffect):
 
     #Process the national polling figures
 
@@ -37,7 +38,7 @@ def model(scenario_name,nationalpolling, incumbenteffect):
 
     method = 'cholesky'
 
-    num_samples = 10000
+    num_samples = 100000
 
     r = np.array([
         [ 0.230703225,  -0.184160098, -0.074598424],
@@ -176,14 +177,44 @@ def model(scenario_name,nationalpolling, incumbenteffect):
     winner_secondround = np.zeros(shape=secondround_ranks.shape)
     winner_secondround[secondround_ranks==3] = 1
 
-    print(scenario_name)
-    print(firstround.mean(axis=0))
-    print(winner_secondround.mean(axis=0))
+    #print(scenario_name)
+    #print(firstround.mean(axis=0))
+    #print(winner_secondround.mean(axis=0))
+
+    firstround_RESULT = firstround.mean(axis=0)
+    win_probability = winner_secondround.mean(axis=0)
+
+    results = [scenario_name, incumbenteffect, firstround_RESULT, win_probability]
+
+    concatenated = np.concatenate(results, axis=None)
+
+    concatenated.shape = (1,10)
+
+    return concatenated
 
     #secondround[firstround_ranks==2] = firstround[firstround_ranks==2] + firstround_second_gain
 
     #print(secondround)
 
-for i in range(10):
-    print("i =", i)
-    model("teesvalley2021",nationalpolling, incumbenteffect = i)
+columns = ["election", "incumbenteffect", "first_other", "lab", "con", "libdem", "winprob_other",
+            "winprob_lab", "winprob_con", "winprob_libdem"]
+
+scenarios2021 = ["cambridgeshirepeterborough2021", "greatermanchester2021",
+                    "liverpool2021", "london2021", "teesvalley2021",
+                    "westmidlands2021", "westofengland2021","westyorkshire2021"]
+
+results_array = np.array([["election","incumbenteffect","first_other",
+                            "lab","con","libdem","winprob_other","winprob_lab",
+                            "winprob_con","winprob_libdem"]])
+
+for scenario in scenarios2021:
+    for i in range(150):
+        if i >0:
+            result = election_model(scenario,nationalpolling, incumbenteffect = i/10)
+        else:
+            result = election_model(scenario,nationalpolling, incumbenteffect = i)
+        results_array = np.concatenate([results_array,result], axis=0)
+
+results_df = pd.DataFrame(results_array, columns = columns)
+
+results_df.to_csv("results.csv")
