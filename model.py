@@ -3,7 +3,6 @@ import numpy as np
 from scipy.linalg import cholesky
 from scipy.stats import norm, describe, t, expon
 from pylab import plot, show, axis, subplot, xlabel, ylabel, grid
-import matplotlib.pyplot as plt
 import pandas as pd
 
 nationalpolling = np.array([
@@ -62,27 +61,6 @@ def election_model(scenario_name,nationalpolling, incumbenteffect):
 
     y = 100*(1/(1+np.exp(-y)))
 
-    #subplot(2,2,1)
-    #plot(y[0], y[1], 'b.')
-    #ylabel('Con')
-    #axis('equal')
-    #grid(True)
-
-    #subplot(2,2,3)
-    #plot(y[0], y[2], 'b.')
-    #xlabel('Lab')
-    #ylabel('LibDem')
-    #axis('equal')
-    #grid(True)
-
-    #subplot(2,2,4)
-    #plot(y[1], y[2], 'b.')
-    #xlabel('Con')
-    #axis('equal')
-    #grid(True)
-
-    #show()
-
     #Produce random sample for independent vote consolidation
 
     number_other = candidates['other']
@@ -102,6 +80,8 @@ def election_model(scenario_name,nationalpolling, incumbenteffect):
         otherscombined = expon.rvs(size=(1, num_samples), scale = otherscombined_mean)
     else:
         otherscombined = np.zeros(shape=(1,num_samples))
+
+    otherscombined[otherscombined>70] = 70
 
     first_other = otherscombined*consolidation
 
@@ -133,6 +113,46 @@ def election_model(scenario_name,nationalpolling, incumbenteffect):
         firstround_stack[2] = firstround_stack[2] + incumbenteffect
         firstround_stack[3] = firstround_stack[3] - incumbenteffect*(firstround_stack[3]/(100-firstround_stack[2]))
 
+    subplot(3,3,1)
+    plot(firstround_stack[2], firstround_stack[1], 'b.', alpha=0.9)
+    ylabel('Con')
+    axis('equal')
+    grid(True)
+
+    subplot(3,3,4)
+    plot(firstround_stack[1], firstround_stack[3], 'b.')
+    xlabel('Lab')
+    ylabel('LibDem')
+    axis('equal')
+    grid(True)
+
+    subplot(3,3,5)
+    plot(firstround_stack[2], firstround_stack[3], 'b.')
+    xlabel('Con')
+    axis('equal')
+    grid(True)
+
+    subplot(3,3,7)
+    plot(firstround_stack[1], firstround_stack[0], 'b.')
+    xlabel('Lab')
+    ylabel('First Other Party')
+    axis('equal')
+    grid(True)
+
+    subplot(3,3,8)
+    plot(firstround_stack[2], firstround_stack[0], 'b.')
+    xlabel('Con')
+    axis('equal')
+    grid(True)
+
+    subplot(3,3,9)
+    plot(firstround_stack[3], firstround_stack[0], 'b.')
+    xlabel('LibDem')
+    axis('equal')
+    grid(True)
+
+    #show()
+
     firstround = firstround_stack.transpose()
 
     secondround = np.zeros(firstround.shape)
@@ -150,7 +170,15 @@ def election_model(scenario_name,nationalpolling, incumbenteffect):
 
     secondroundrandom = t.rvs(size=(1, num_samples),df=12)
 
-    secondround_logistic_share = 0.255688006 + (secondroundrandom*0.428517842)
+    #secondround_logistic_share = 0.255688006 + (secondroundrandom*0.428517842)
+
+    firstround_lead = firstround[firstround_ranks==3] - firstround[firstround_ranks==2]
+
+    predicted_secondround_logistic = -0.443990 + 0.009721*firstround[firstround_ranks==3] + 0.019366*firstround_lead
+
+    predicted_secondround_logistic[firstround_ranks[:,1]==3] += 0.150195
+
+    secondround_logistic_share = predicted_secondround_logistic + (secondroundrandom*0.1217)
 
     secondround_gain_share = 100*(1/(1+np.exp(-secondround_logistic_share)))
 
@@ -190,6 +218,8 @@ def election_model(scenario_name,nationalpolling, incumbenteffect):
 
     concatenated.shape = (1,10)
 
+    print(concatenated)
+
     return concatenated
 
     #secondround[firstround_ranks==2] = firstround[firstround_ranks==2] + firstround_second_gain
@@ -207,6 +237,8 @@ results_array = np.array([["election","incumbenteffect","first_other",
                             "lab","con","libdem","winprob_other","winprob_lab",
                             "winprob_con","winprob_libdem"]])
 
+#election_model("westmidlands2021",nationalpolling,5)
+
 for scenario in scenarios2021:
     for i in range(150):
         if i >0:
@@ -217,4 +249,4 @@ for scenario in scenarios2021:
 
 results_df = pd.DataFrame(results_array, columns = columns)
 
-results_df.to_csv("results.csv")
+results_df.to_csv("results_newsecondround.csv")
