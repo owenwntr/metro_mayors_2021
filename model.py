@@ -11,8 +11,6 @@ nationalpolling = np.array([
     [ 7.2]
 ])
 
-#incumbenteffect = 0
-
 def election_model(scenario_name,nationalpolling, incumbenteffect):
 
     #Process the national polling figures
@@ -249,4 +247,4 @@ for scenario in scenarios2021:
 
 results_df = pd.DataFrame(results_array, columns = columns)
 
-results_df.to_csv("results_newsecondround.csv")
+results_df[2:].to_csv("results.csv")
