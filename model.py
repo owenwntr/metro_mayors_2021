@@ -6,9 +6,9 @@ from pylab import plot, show, axis, subplot, xlabel, ylabel, grid
 import pandas as pd
 
 nationalpolling = np.array([
-    [ 35.3],
-    [ 42.5],
-    [ 7.2]
+    [ 36.3],
+    [ 40.8],
+    [ 7.6]
 ])
 
 def election_model(scenario_name,nationalpolling, incumbenteffect):
@@ -111,43 +111,43 @@ def election_model(scenario_name,nationalpolling, incumbenteffect):
         firstround_stack[2] = firstround_stack[2] + incumbenteffect
         firstround_stack[3] = firstround_stack[3] - incumbenteffect*(firstround_stack[3]/(100-firstround_stack[2]))
 
-    subplot(3,3,1)
-    plot(firstround_stack[2], firstround_stack[1], 'b.', alpha=0.9)
-    ylabel('Con')
-    axis('equal')
-    grid(True)
+    #subplot(3,3,1)
+    #plot(firstround_stack[2], firstround_stack[1], 'b.', alpha=0.9)
+    #ylabel('Con')
+    #axis('equal')
+    #grid(True)
 
-    subplot(3,3,4)
-    plot(firstround_stack[1], firstround_stack[3], 'b.')
-    xlabel('Lab')
-    ylabel('LibDem')
-    axis('equal')
-    grid(True)
+    #subplot(3,3,4)
+    #plot(firstround_stack[1], firstround_stack[3], 'b.')
+    #xlabel('Lab')
+    #ylabel('LibDem')
+    #axis('equal')
+    #grid(True)
 
-    subplot(3,3,5)
-    plot(firstround_stack[2], firstround_stack[3], 'b.')
-    xlabel('Con')
-    axis('equal')
-    grid(True)
+    #subplot(3,3,5)
+    #plot(firstround_stack[2], firstround_stack[3], 'b.')
+    #xlabel('Con')
+    #axis('equal')
+    #grid(True)
 
-    subplot(3,3,7)
-    plot(firstround_stack[1], firstround_stack[0], 'b.')
-    xlabel('Lab')
-    ylabel('First Other Party')
-    axis('equal')
-    grid(True)
+    #subplot(3,3,7)
+    #plot(firstround_stack[1], firstround_stack[0], 'b.')
+    #xlabel('Lab')
+    #ylabel('First Other Party')
+    #axis('equal')
+    #grid(True)
 
-    subplot(3,3,8)
-    plot(firstround_stack[2], firstround_stack[0], 'b.')
-    xlabel('Con')
-    axis('equal')
-    grid(True)
+    #subplot(3,3,8)
+    #plot(firstround_stack[2], firstround_stack[0], 'b.')
+    #xlabel('Con')
+    #axis('equal')
+    #grid(True)
 
-    subplot(3,3,9)
-    plot(firstround_stack[3], firstround_stack[0], 'b.')
-    xlabel('LibDem')
-    axis('equal')
-    grid(True)
+    #subplot(3,3,9)
+    #plot(firstround_stack[3], firstround_stack[0], 'b.')
+    #xlabel('LibDem')
+    #axis('equal')
+    #grid(True)
 
     #show()
 
@@ -238,12 +238,13 @@ results_array = np.array([["election","incumbenteffect","first_other",
 #election_model("westmidlands2021",nationalpolling,5)
 
 for scenario in scenarios2021:
-    for i in range(150):
-        if i >0:
-            result = election_model(scenario,nationalpolling, incumbenteffect = i/10)
-        else:
-            result = election_model(scenario,nationalpolling, incumbenteffect = i)
-        results_array = np.concatenate([results_array,result], axis=0)
+    election_model(scenario,nationalpolling,6)
+    #for i in range(150):
+        #if i >0:
+            #result = election_model(scenario,nationalpolling, incumbenteffect = i/10)
+        #else:
+            #result = election_model(scenario,nationalpolling, incumbenteffect = i)
+        #results_array = np.concatenate([results_array,result], axis=0)
 
 results_df = pd.DataFrame(results_array, columns = columns)
 
